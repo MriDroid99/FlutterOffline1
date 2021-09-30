@@ -32,6 +32,10 @@
 
 import 'dart:io';
 
+import 'dart:math';
+
+import 'dart:svg';
+
 void main() {
   Points points = Points();
   // points.addPoint(1, 2);
@@ -82,7 +86,41 @@ class Points {
   }
 
   void addTriangle() {
-    // TODO -
+    List<Point> hamda = [];
+
+    int a;
+    for (a = 1; a < 4; a++) {
+      print('please enter x$a');
+      int x;
+      x = int.parse(stdin.readLineSync()!);
+
+      print('please enter y$a');
+      int y;
+      y = int.parse(stdin.readLineSync()!);
+      hamda.add(Point(x, y));
+    }
+    _shapes.addAll({'triangle': hamda});
+  }
+
+  void calcRectPerimeter() {
+    List<Point> hamada = _shapes['Rectangle']!;
+    double h, w;
+    h = sideLength(hamada[1].x, hamada[1].y, hamada[2].x, hamada[2].y);
+    w = sideLength(hamada[0].x, hamada[0].y, hamada[1].x, hamada[1].y);
+    print(2 * (h + w));
+  }
+
+  void calTriPerimeter() {
+    List<Point> hamada = _shapes['triangle']!;
+    double s1 = sideLength(hamada[0].x, hamada[0].y, hamada[1].x, hamada[1].y);
+    double s2 = sideLength(hamada[1].x, hamada[1].y, hamada[2].x, hamada[2].y);
+    double s3 = sideLength(hamada[2].x, hamada[2].y, hamada[0].x, hamada[0].y);
+    print(s1 + s2 + s3);
+  }
+
+  double sideLength(int x1, int y1, int x2, int y2) {
+    double length = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+    return length;
   }
 
   void printPoints() {
