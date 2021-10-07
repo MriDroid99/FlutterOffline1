@@ -34,16 +34,15 @@ import 'dart:io';
 
 import 'dart:math';
 
-import 'dart:svg';
-
 void main() {
   Points points = Points();
-  // points.addPoint(1, 2);
-  // points.addPoint(5, 6);
-  // points.addOriginPoint();
-  // points.printPoints();
-  points.addRect();
-  points.printShapes();
+  points.addPoint(1, 2);
+  points.addPoint(5, 6);
+  points.addOriginPoint();
+  points.printPoints();
+  // Point.origin();
+  // points.addRect();
+  // points.printShapes();
 }
 
 class Point {
