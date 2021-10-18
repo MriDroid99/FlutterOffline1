@@ -2,63 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:personalexp/model/item.dart';
 import 'package:personalexp/widget/item_widget.dart';
 import 'package:personalexp/widget/sheet_widget.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final List<Item> _item = [];
-
-  void addItem(String id, String title, double price, DateTime date) {
-    setState(() {
-      _item.add(Item(
-        id: id,
-        title: title,
-        price: price,
-        date: date,
-      ));
-    });
-  }
-
-  void removeItem(String id) {
-    setState(() {
-      _item.removeWhere((element) => element.id == id);
-    });
-  }
-
-  void _showSheet() {
+  void _showSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SheetWidget(addItem),
+      builder: (_) => const SheetWidget(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Item> _items = Provider.of<Items>(context).items;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Personal Expanses'),
       ),
       body: ListView.separated(
-        itemBuilder: (_, i) => ItemWidget(
-          _item[i].id,
-          _item[i].title,
-          _item[i].price,
-          _item[i].date,
-          removeItem,
+        itemBuilder: (_, i) => ChangeNotifierProvider.value(
+          value: _items[i],
+          child: const ItemWidget(),
         ),
         separatorBuilder: (_, i) => const Divider(
           thickness: 1.5,
           height: 0,
         ),
-        itemCount: _item.length,
+        itemCount: _items.length,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showSheet,
+        onPressed: () => _showSheet(context),
         child: const Icon(Icons.add),
       ),
     );

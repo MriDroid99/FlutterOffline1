@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:personalexp/model/item.dart';
+import 'package:provider/provider.dart';
 
 class SheetWidget extends StatefulWidget {
-  final Function(String id, String title, double price, DateTime date) addItem;
-  const SheetWidget(this.addItem, {Key? key}) : super(key: key);
+  const SheetWidget({Key? key}) : super(key: key);
 
   @override
   State<SheetWidget> createState() => _SheetWidgetState();
@@ -71,7 +72,7 @@ class _SheetWidgetState extends State<SheetWidget> {
           ),
           MaterialButton(
             onPressed: () {
-              widget.addItem(
+              Provider.of<Items>(context, listen: false).addItem(
                 DateTime.now().toString(),
                 titleController.text,
                 double.parse(priceController.text),

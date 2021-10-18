@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:personalexp/model/item.dart';
+import 'package:provider/provider.dart';
 
 class ItemWidget extends StatelessWidget {
-  final String id, title;
-  final double price;
-  final DateTime date;
-  final Function(String id) removeItem;
-  const ItemWidget(this.id, this.title, this.price, this.date, this.removeItem,
-      {Key? key})
-      : super(key: key);
+  const ItemWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Item _item = Provider.of(context);
     return ListTile(
-      title: Text(title),
-      subtitle: Text(DateFormat.yMMMd().format(date)),
+      title: Text(_item.title),
+      subtitle: Text(DateFormat.yMMMd().format(_item.date)),
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).colorScheme.secondary,
         radius: 25,
@@ -22,7 +19,7 @@ class ItemWidget extends StatelessWidget {
             child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            '$price',
+            '${_item.price}',
             style: const TextStyle(
               color: Colors.black,
             ),
@@ -31,7 +28,7 @@ class ItemWidget extends StatelessWidget {
       ),
       trailing: IconButton(
         onPressed: () {
-          removeItem(id);
+          Provider.of<Items>(context, listen: false).removeItem(_item.id);
         },
         icon: const Icon(Icons.delete_outlined),
         color: Colors.red,
