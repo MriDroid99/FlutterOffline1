@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/provider/cart.dart';
 import 'package:shopapp/screen/favorites_screen.dart';
 import 'package:shopapp/screen/products_screen.dart';
+import 'package:shopapp/widget/badge.dart';
 import 'package:shopapp/widget/drawer.dart';
 
 class TabScreen extends StatefulWidget {
@@ -40,6 +43,17 @@ class _TabScreenState extends State<TabScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_pages[_currentIndex]['title']),
+        actions: [
+          Badge(
+            child: IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/cart'),
+              icon: const Icon(
+                Icons.shopping_cart_outlined,
+              ),
+            ),
+            value: Provider.of<CartItems>(context).itemsCount.toString(),
+          ),
+        ],
       ),
       drawer: const DrawerItem(),
       body: _pages[_currentIndex]['body'],

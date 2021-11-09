@@ -38,6 +38,7 @@ class DrawerItem extends StatelessWidget {
             height: 0,
           ),
           ListTile(
+            onTap: () => Navigator.pushNamed(context, '/order'),
             title: Text(
               'Order',
               style: Theme.of(context)
