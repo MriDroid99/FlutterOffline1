@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/provider/cart.dart';
+import 'package:shopapp/provider/product.dart';
 import 'package:shopapp/screen/favorites_screen.dart';
 import 'package:shopapp/screen/products_screen.dart';
 import 'package:shopapp/widget/badge.dart';
@@ -16,6 +17,7 @@ class TabScreen extends StatefulWidget {
 class _TabScreenState extends State<TabScreen> {
   late List<Map<String, dynamic>> _pages;
   int _currentIndex = 0;
+  bool _isLoading = true;
 
   void _changeIndex(int index) {
     setState(() {
@@ -35,6 +37,11 @@ class _TabScreenState extends State<TabScreen> {
         'body': const FavoritesScreen(),
       },
     ];
+    // Provider.of<Products>(context, listen: false).fetchData().then((value) {
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    // });
     super.initState();
   }
 
@@ -56,7 +63,18 @@ class _TabScreenState extends State<TabScreen> {
         ],
       ),
       drawer: const DrawerItem(),
-      body: _pages[_currentIndex]['body'],
+      body: FutureBuilder(
+          future: Provider.of<Products>(context).fetchData(),
+          builder: (_, snapShot) {
+            if (snapShot.connectionState == ConnectionState.done) {
+              return _pages[_currentIndex]['body'];
+            }
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _changeIndex,
