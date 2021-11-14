@@ -20,12 +20,20 @@ class Order with ChangeNotifier {
 }
 
 class Orders with ChangeNotifier {
-  final List<Order> _orders = [];
+  String? _uid;
+  String? _token;
+  List<Order> _orders;
+
+  Orders({String? uid, String? token, List<Order>? orders})
+      : _uid = uid,
+        _token = token,
+        _orders = orders ?? [];
 
   List<Order> get orders => [..._orders];
 
   Future<void> fetchData() async {
-    var response = await get(Uri.parse('$mainURL/orders.json'));
+    var response =
+        await get(Uri.parse('$mainURL/orders/$_uid.json?auth=$_token'));
     Map<String, dynamic>? extractedData =
         json.decode(response.body) as Map<String, dynamic>?;
 
@@ -43,6 +51,7 @@ class Orders with ChangeNotifier {
                   id: e['id'],
                   title: e['title'],
                   price: e['price'],
+                  quantity: e['quantity'],
                 ),
               )
               .toList(),
@@ -56,8 +65,8 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(
       String id, List<CartItem> prods, double totalPrice, DateTime date) async {
-    var response = await post(
-      Uri.parse('$mainURL/orders.json'),
+    await post(
+      Uri.parse('$mainURL/orders/$_uid.json?auth=$_token'),
       body: json.encode({
         'prods': prods
             .map((e) => {

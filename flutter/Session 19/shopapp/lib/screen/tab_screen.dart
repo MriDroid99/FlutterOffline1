@@ -17,7 +17,7 @@ class TabScreen extends StatefulWidget {
 class _TabScreenState extends State<TabScreen> {
   late List<Map<String, dynamic>> _pages;
   int _currentIndex = 0;
-  bool _isLoading = true;
+  // bool _isLoading = true;
 
   void _changeIndex(int index) {
     setState(() {
@@ -64,7 +64,7 @@ class _TabScreenState extends State<TabScreen> {
       ),
       drawer: const DrawerItem(),
       body: FutureBuilder(
-          future: Provider.of<Products>(context).fetchData(),
+          future: Provider.of<Products>(context, listen: false).fetchData(),
           builder: (_, snapShot) {
             if (snapShot.connectionState == ConnectionState.done) {
               return _pages[_currentIndex]['body'];

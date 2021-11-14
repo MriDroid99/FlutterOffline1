@@ -25,48 +25,15 @@ class Product with ChangeNotifier {
 }
 
 class Products with ChangeNotifier {
-  final List<Product> _prods = [
-    // Product(
-    //   id: '1',
-    //   title: 'title1',
-    //   description: 'description1',
-    //   imgUrl:
-    //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
-    //   price: 100,
-    // ),
-    // Product(
-    //   id: '2',
-    //   title: 'title2',
-    //   description: 'description2',
-    //   imgUrl:
-    //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
-    //   price: 100,
-    // ),
-    // Product(
-    //   id: '3',
-    //   title: 'title3',
-    //   description: 'description3',
-    //   imgUrl:
-    //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
-    //   price: 100,
-    // ),
-    // Product(
-    //   id: '4',
-    //   title: 'title4',
-    //   description: 'description4',
-    //   imgUrl:
-    //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
-    //   price: 100,
-    // ),
-    // Product(
-    //   id: '5',
-    //   title: 'title5',
-    //   description: 'description5',
-    //   imgUrl:
-    //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
-    //   price: 100,
-    // ),
-  ];
+  String? _uid;
+  String? _token;
+  List<Product> _prods;
+
+  Products({String? uid, String? token, List<Product>? prods})
+      : _uid = uid,
+        _token = token,
+        _prods = prods ?? [];
+  //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
 
   List<Product> get prods => [..._prods];
 
@@ -77,7 +44,8 @@ class Products with ChangeNotifier {
       _prods.firstWhere((element) => element.id == id);
 
   Future<void> fetchData() async {
-    var response = await get(Uri.parse('$mainURL/products.json'));
+    var response =
+        await get(Uri.parse('$mainURL/products/$_uid.json?auth=$_token'));
     Map<String, dynamic>? extractedData =
         json.decode(response.body) as Map<String, dynamic>?;
 
@@ -107,7 +75,7 @@ class Products with ChangeNotifier {
     String imgUrl,
   ) async {
     var response = await post(
-      prodURL,
+      Uri.parse('$mainURL/products/$_uid.json?auth=$_token'),
       body: json.encode({
         'title': title,
         'description': description,
@@ -134,7 +102,7 @@ class Products with ChangeNotifier {
     String imgUrl,
   ) async {
     await patch(
-      Uri.parse('$mainURL/products/$id.json'),
+      Uri.parse('$mainURL/products/$_uid/$id.json?auth=$_token'),
       body: json.encode({
         'title': title,
         'description': description,
@@ -155,7 +123,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> removeProduct(String id) async {
-    await delete(Uri.parse('$mainURL/products/$id.json'));
+    await delete(Uri.parse('$mainURL/products/$_uid/$id.json?auth=$_token'));
     // _prods.removeWhere((element) => element.id == id);
     notifyListeners();
   }

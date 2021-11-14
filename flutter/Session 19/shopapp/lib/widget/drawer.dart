@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/provider/auth.dart';
 
 class DrawerItem extends StatelessWidget {
   const DrawerItem({Key? key}) : super(key: key);
@@ -56,6 +58,19 @@ class DrawerItem extends StatelessWidget {
                 Navigator.pushReplacementNamed(context, '/manage_products'),
             title: Text(
               'Manage Products',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/auth');
+              Provider.of<Auth>(context, listen: false).logOut();
+            },
+            title: Text(
+              'Sign Out',
               style: Theme.of(context)
                   .textTheme
                   .headline5!
