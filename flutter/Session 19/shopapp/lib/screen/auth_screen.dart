@@ -107,38 +107,43 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  // void _showErrorDialog(String msg) {
-  //   showDialog(
-  //       context: context,
-  //       builder: (_) {
-  //         return AlertDialog(
-  //           title: const Text('An Error Occure'),
-  //           content: Text(msg),
-  //           actions: <Widget>[
-  //             TextButton(
-  //               onPressed: () => Navigator.of(context).pop(),
-  //               child: const Text('Okey'),
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
+  void _showErrorDialog(String msg) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('An Error Occure'),
+            content: Text(msg),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Okey'),
+              )
+            ],
+          );
+        });
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _isLoading = true;
-    });
 
     _formKey.currentState!.save();
 
-    if (_authMode == AuthMode.signup) {
-      await Provider.of<Auth>(context, listen: false).signUp(email!, password!);
-    } else {
-      await Provider.of<Auth>(context, listen: false).logIn(email!, password!);
+    try {
+      if (_authMode == AuthMode.signup) {
+        await Provider.of<Auth>(context, listen: false)
+            .signUp(email!, password!);
+      } else {
+        await Provider.of<Auth>(context, listen: false)
+            .logIn(email!, password!);
+        setState(() {
+          _isLoading = true;
+        });
+        Navigator.pushReplacementNamed(context, '/tab');
+      }
+    } catch (e) {
+      _showErrorDialog(e.toString());
     }
-
-    Navigator.pushReplacementNamed(context, '/tab');
   }
 
   void _switchAuthMode() {

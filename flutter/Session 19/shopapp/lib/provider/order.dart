@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shopapp/provider/cart.dart';
@@ -32,10 +33,14 @@ class Orders with ChangeNotifier {
   List<Order> get orders => [..._orders];
 
   Future<void> fetchData() async {
-    var response =
-        await get(Uri.parse('$mainURL/orders/$_uid.json?auth=$_token'));
-    Map<String, dynamic>? extractedData =
-        json.decode(response.body) as Map<String, dynamic>?;
+    // var response =
+    //     await get(Uri.parse('$mainURL/orders/$_uid.json?auth=$_token'));
+    final dbRef =
+        await FirebaseDatabase.instance.reference().child('orders').get();
+    // Map<String, dynamic>? extractedData =
+    //     json.decode(response.body) as Map<String, dynamic>?;
+
+    var extractedData = dbRef.value;
 
     _orders.clear();
     if (extractedData == null) {
@@ -50,12 +55,12 @@ class Orders with ChangeNotifier {
                 (e) => CartItem(
                   id: e['id'],
                   title: e['title'],
-                  price: e['price'],
+                  price: double.parse(e['price'].toString()),
                   quantity: e['quantity'],
                 ),
               )
               .toList(),
-          totalPrice: data['totalPrice'],
+          totalPrice: double.parse(data['totalPrice'].toString()),
           date: DateTime.parse(data['date']),
         ),
       );
@@ -65,21 +70,34 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(
       String id, List<CartItem> prods, double totalPrice, DateTime date) async {
-    await post(
-      Uri.parse('$mainURL/orders/$_uid.json?auth=$_token'),
-      body: json.encode({
-        'prods': prods
-            .map((e) => {
-                  'id': e.id,
-                  'title': e.title,
-                  'price': e.price,
-                  'quantity': e.quantity,
-                })
-            .toList(),
-        'totalPrice': totalPrice,
-        'date': date.toIso8601String(),
-      }),
-    );
+    // await post(
+    //   Uri.parse('$mainURL/orders/$_uid.json?auth=$_token'),
+    //   body: json.encode({
+    //     'prods': prods
+    //         .map((e) => {
+    //               'id': e.id,
+    //               'title': e.title,
+    //               'price': e.price,
+    //               'quantity': e.quantity,
+    //             })
+    //         .toList(),
+    //     'totalPrice': totalPrice,
+    //     'date': date.toIso8601String(),
+    //   }),
+    // );
+    final dbRef = FirebaseDatabase.instance.reference().child('orders').push();
+    await dbRef.set({
+      'prods': prods
+          .map((e) => {
+                'id': e.id,
+                'title': e.title,
+                'price': e.price,
+                'quantity': e.quantity,
+              })
+          .toList(),
+      'totalPrice': totalPrice,
+      'date': date.toIso8601String(),
+    });
     // _orders.add(
     //   Order(
     //     id: json.decode(response.body)['name'],

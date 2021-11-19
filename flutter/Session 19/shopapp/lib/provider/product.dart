@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shopapp/util/constants.dart';
@@ -44,10 +45,15 @@ class Products with ChangeNotifier {
       _prods.firstWhere((element) => element.id == id);
 
   Future<void> fetchData() async {
-    var response =
-        await get(Uri.parse('$mainURL/products/$_uid.json?auth=$_token'));
-    Map<String, dynamic>? extractedData =
-        json.decode(response.body) as Map<String, dynamic>?;
+    // var response =
+    //     await get(Uri.parse('$mainURL/products/$_uid.json?auth=$_token'));
+    final dbRef = await FirebaseDatabase.instance
+        .reference()
+        .child('products')
+        .child(_uid!)
+        .get();
+
+    var extractedData = dbRef.value;
 
     _prods.clear();
     if (extractedData == null) {
@@ -60,7 +66,7 @@ class Products with ChangeNotifier {
           title: data['title'],
           description: data['description'],
           imgUrl: data['imgUrl'],
-          price: data['price'],
+          price: double.parse(data['price'].toString()),
         ),
       );
     });
@@ -74,18 +80,31 @@ class Products with ChangeNotifier {
     String description,
     String imgUrl,
   ) async {
-    var response = await post(
-      Uri.parse('$mainURL/products/$_uid.json?auth=$_token'),
-      body: json.encode({
-        'title': title,
-        'description': description,
-        'imgUrl': imgUrl,
-        'price': price,
-      }),
-    );
+    // var response = await post(
+    //   Uri.parse('$mainURL/products/$_uid.json?auth=$_token'),
+    // body: json.encode({
+    //   'title': title,
+    //   'description': description,
+    //   'imgUrl': imgUrl,
+    //   'price': price,
+    // }),
+    // );
+
+    final dbRef = FirebaseDatabase.instance
+        .reference()
+        .child('products')
+        .child(_uid!)
+        .push();
+
+    await dbRef.set({
+      'title': title,
+      'description': description,
+      'imgUrl': imgUrl,
+      'price': price,
+    });
 
     _prods.add(Product(
-      id: json.decode(response.body)['name'],
+      id: dbRef.key,
       title: title,
       description: description,
       imgUrl: imgUrl,
@@ -101,15 +120,27 @@ class Products with ChangeNotifier {
     String description,
     String imgUrl,
   ) async {
-    await patch(
-      Uri.parse('$mainURL/products/$_uid/$id.json?auth=$_token'),
-      body: json.encode({
-        'title': title,
-        'description': description,
-        'imgUrl': imgUrl,
-        'price': price,
-      }),
-    );
+    // await patch(
+    //   Uri.parse('$mainURL/products/$_uid/$id.json?auth=$_token'),
+    //   body: json.encode({
+    //     'title': title,
+    //     'description': description,
+    //     'imgUrl': imgUrl,
+    //     'price': price,
+    //   }),
+    // );
+
+    await FirebaseDatabase.instance
+        .reference()
+        .child('products')
+        .child(_uid!)
+        .child(id)
+        .update({
+      'title': title,
+      'description': description,
+      'imgUrl': imgUrl,
+      'price': price,
+    });
 
     int updatedIndex = _prods.indexWhere((element) => element.id == id);
     _prods[updatedIndex] = Product(
@@ -123,8 +154,14 @@ class Products with ChangeNotifier {
   }
 
   Future<void> removeProduct(String id) async {
-    await delete(Uri.parse('$mainURL/products/$_uid/$id.json?auth=$_token'));
-    // _prods.removeWhere((element) => element.id == id);
+    // await delete(Uri.parse('$mainURL/products/$_uid/$id.json?auth=$_token'));
+    await FirebaseDatabase.instance
+        .reference()
+        .child('products')
+        .child(_uid!)
+        .child(id)
+        .remove();
+    _prods.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 

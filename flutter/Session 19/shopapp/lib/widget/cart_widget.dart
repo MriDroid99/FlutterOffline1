@@ -22,6 +22,7 @@ class CartWidget extends StatelessWidget {
       ),
       secondaryActions: <Widget>[
         IconSlideAction(
+          closeOnTap: false,
           caption: 'Add',
           color: Colors.blue,
           icon: Icons.add,
