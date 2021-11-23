@@ -1,10 +1,10 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+// import 'package:http/http.dart';
 import 'package:shopapp/provider/cart.dart';
-import 'package:shopapp/util/constants.dart';
+// import 'package:shopapp/util/constants.dart';
 
 class Order with ChangeNotifier {
   String id;
@@ -21,14 +21,12 @@ class Order with ChangeNotifier {
 }
 
 class Orders with ChangeNotifier {
-  String? _uid;
-  String? _token;
+  String? uid;
+  String? token;
+  // ignore: prefer_final_fields
   List<Order> _orders;
 
-  Orders({String? uid, String? token, List<Order>? orders})
-      : _uid = uid,
-        _token = token,
-        _orders = orders ?? [];
+  Orders({this.uid, this.token, List<Order>? orders}) : _orders = orders ?? [];
 
   List<Order> get orders => [..._orders];
 

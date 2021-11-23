@@ -30,6 +30,7 @@ class CartWidget extends StatelessWidget {
               .increaseQuantity(_item.id),
         ),
         IconSlideAction(
+          closeOnTap: false,
           caption: 'Remove',
           color: Colors.indigo,
           icon: Icons.remove,

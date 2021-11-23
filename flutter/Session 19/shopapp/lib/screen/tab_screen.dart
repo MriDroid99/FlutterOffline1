@@ -15,6 +15,7 @@ class TabScreen extends StatefulWidget {
 }
 
 class _TabScreenState extends State<TabScreen> {
+  bool _isFirst = true;
   late List<Map<String, dynamic>> _pages;
   int _currentIndex = 0;
   // bool _isLoading = true;
@@ -43,6 +44,15 @@ class _TabScreenState extends State<TabScreen> {
     //   });
     // });
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isFirst) {
+      Provider.of<CartItems>(context, listen: false).getItems();
+      _isFirst = false;
+    }
+    super.didChangeDependencies();
   }
 
   @override

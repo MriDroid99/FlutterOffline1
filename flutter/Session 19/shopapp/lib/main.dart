@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/provider/auth.dart';
 import 'package:shopapp/provider/cart.dart';
+import 'package:shopapp/provider/localdatabase.dart';
 import 'package:shopapp/provider/order.dart';
 import 'package:shopapp/provider/product.dart';
 import 'package:shopapp/screen/add_product.dart';
@@ -27,8 +28,14 @@ class MyApp extends StatelessWidget {
       providers: [
         // ChangeNotifierProvider.value(value: Products()),
         // ChangeNotifierProvider.value(value: Orders()),
-        ChangeNotifierProvider.value(value: CartItems()),
+        // ChangeNotifierProvider.value(value: CartItems()),
         ChangeNotifierProvider.value(value: Auth()),
+        ChangeNotifierProvider.value(value: LocalDatabase()),
+        ChangeNotifierProxyProvider<LocalDatabase, CartItems>(
+          create: (_) => CartItems(),
+          update: (_, db, oldCart) =>
+              CartItems(dbRef: db.dbRef, items: oldCart?.items),
+        ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: (_) => Orders(),
           update: (_, auth, oldOrder) => Orders(
@@ -54,20 +61,27 @@ class MyApp extends StatelessWidget {
             secondary: Colors.pink.shade300,
           ),
         ),
-        home: Consumer<Auth>(
-          builder: (_, auth, child) {
+        home: Consumer2<Auth, LocalDatabase>(
+          builder: (_, auth, db, child) {
             return FutureBuilder(
-              future: auth.getData(),
-              builder: (_, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (auth.token == null) {
-                    return const AuthScreen();
+                future: db.createDB(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return FutureBuilder(
+                      future: auth.getData(),
+                      builder: (_, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (auth.token == null) {
+                            return const AuthScreen();
+                          }
+                          return const TabScreen();
+                        }
+                        return Container();
+                      },
+                    );
                   }
-                  return const TabScreen();
-                }
-                return Container();
-              },
-            );
+                  return Container();
+                });
           },
         ),
         routes: {

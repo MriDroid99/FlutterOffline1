@@ -1,9 +1,9 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:shopapp/util/constants.dart';
+// import 'package:http/http.dart';
+// import 'package:shopapp/util/constants.dart';
 
 class Product with ChangeNotifier {
   String id, title, description, imgUrl;
@@ -26,14 +26,12 @@ class Product with ChangeNotifier {
 }
 
 class Products with ChangeNotifier {
-  String? _uid;
-  String? _token;
+  String? uid;
+  String? token;
+  // ignore: prefer_final_fields
   List<Product> _prods;
 
-  Products({String? uid, String? token, List<Product>? prods})
-      : _uid = uid,
-        _token = token,
-        _prods = prods ?? [];
+  Products({this.uid, this.token, List<Product>? prods}) : _prods = prods ?? [];
   //       'https://th.bing.com/th/id/OIP.UuHyPx-mK3IxCdHBFgXJVwHaEK?pid=ImgDet&rs=1',
 
   List<Product> get prods => [..._prods];
@@ -50,7 +48,7 @@ class Products with ChangeNotifier {
     final dbRef = await FirebaseDatabase.instance
         .reference()
         .child('products')
-        .child(_uid!)
+        .child(uid!)
         .get();
 
     var extractedData = dbRef.value;
@@ -93,7 +91,7 @@ class Products with ChangeNotifier {
     final dbRef = FirebaseDatabase.instance
         .reference()
         .child('products')
-        .child(_uid!)
+        .child(uid!)
         .push();
 
     await dbRef.set({
@@ -133,7 +131,7 @@ class Products with ChangeNotifier {
     await FirebaseDatabase.instance
         .reference()
         .child('products')
-        .child(_uid!)
+        .child(uid!)
         .child(id)
         .update({
       'title': title,
@@ -158,7 +156,7 @@ class Products with ChangeNotifier {
     await FirebaseDatabase.instance
         .reference()
         .child('products')
-        .child(_uid!)
+        .child(uid!)
         .child(id)
         .remove();
     _prods.removeWhere((element) => element.id == id);

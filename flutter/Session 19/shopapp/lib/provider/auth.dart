@@ -27,7 +27,6 @@ class Auth with ChangeNotifier {
       sharedRef.setString('token', _token!);
       notifyListeners();
     } catch (e) {
-      print(e.toString());
       String msg = 'Error';
       if (e.toString().contains('email-already-in-use')) {
         msg = 'Email already exist';
@@ -54,7 +53,6 @@ class Auth with ChangeNotifier {
       sharedRef.setString('token', _token!);
       notifyListeners();
     } catch (e) {
-      print(e.toString());
       String msg = 'Error';
       if (e.toString().contains('user-not-found')) {
         msg = 'Enter valid email';
